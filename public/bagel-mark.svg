@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="BagelNet mark">
+  <rect width="128" height="128" rx="24" fill="#17211b"/>
+  <circle cx="64" cy="64" r="43" fill="#f3bc50"/>
+  <circle cx="64" cy="64" r="17" fill="#17211b"/>
+  <circle cx="48" cy="45" r="4" fill="#b33f62"/>
+  <circle cx="80" cy="45" r="4" fill="#2f8f5b"/>
+  <circle cx="91" cy="70" r="4" fill="#b33f62"/>
+  <circle cx="36" cy="69" r="4" fill="#2f8f5b"/>
+  <path d="M30 93c21 14 47 14 68 0" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" opacity=".88"/>
+</svg>
