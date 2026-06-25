@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BagelNet</title>
+    <script>
+      if (location.protocol === "file:") {
+        location.replace("http://localhost:3000");
+      }
+    </script>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="auth-view" id="authView">
+        <div class="brand-panel">
+          <div class="brand-topline">
+            <img class="brand-mark" src="bagel-mark.svg" alt="" />
+            <span>Private social relay</span>
+          </div>
+          <div class="hero-copy">
+            <h1>BagelNet</h1>
+            <p>Drop a code, approve the request, then talk in a clean private room.</p>
+          </div>
+          <div class="hero-stack" aria-hidden="true">
+            <div class="hero-card hero-card-one">
+              <span>Friend code</span>
+              <strong>462-234-349</strong>
+            </div>
+            <div class="hero-card hero-card-two">
+              <span>Incoming</span>
+              <strong>Request ready</strong>
+            </div>
+          </div>
+        </div>
+
+        <form class="auth-card" id="authForm">
+          <div class="auth-heading">
+            <span id="authEyebrow">New account</span>
+            <h2 id="authTitle">Create your BagelNet ID</h2>
+          </div>
+
+          <div class="auth-tabs" role="tablist" aria-label="Account mode">
+            <button type="button" class="tab active" id="signupTab">Create</button>
+            <button type="button" class="tab" id="loginTab">Login</button>
+          </div>
+
+          <label>
+            <span id="identityLabel">Username</span>
+            <input id="usernameInput" name="username" autocomplete="username" required minlength="3" maxlength="20" />
+          </label>
+
+          <label id="displayNameLabel">
+            <span>Display name</span>
+            <input id="displayNameInput" name="displayName" autocomplete="name" minlength="2" maxlength="32" />
+          </label>
+
+          <label>
+            <span>Password</span>
+            <input id="passwordInput" name="password" type="password" autocomplete="current-password" required minlength="6" />
+          </label>
+
+          <button class="primary-action" type="submit" id="authSubmit">Create account</button>
+          <p class="form-message" id="authMessage" role="status"></p>
+        </form>
+      </section>
+
+      <section class="app-view hidden" id="appView">
+        <aside class="sidebar">
+          <div class="workspace-label">
+            <span>BagelNet</span>
+            <strong>Command</strong>
+          </div>
+
+          <div class="profile">
+            <img class="profile-mark" src="bagel-mark.svg" alt="" />
+            <div>
+              <strong id="displayNameText"></strong>
+              <span id="usernameText"></span>
+            </div>
+            <button class="icon-button" id="logoutButton" title="Logout" aria-label="Logout">Exit</button>
+          </div>
+
+          <div class="code-panel">
+            <span>Your friend code</span>
+            <button class="friend-code" id="copyCodeButton" type="button" title="Copy friend code"></button>
+          </div>
+
+          <form class="add-friend" id="friendForm">
+            <label>
+              <span>Add by code</span>
+              <input id="friendCodeInput" placeholder="462-234-349" inputmode="numeric" maxlength="11" />
+            </label>
+            <button type="submit">Send request</button>
+            <p class="form-message" id="friendMessage" role="status"></p>
+          </form>
+
+          <div class="requests-block">
+            <div class="block-title">Requests</div>
+            <div class="request-list" id="requestList"></div>
+          </div>
+
+          <div class="friends-block">
+            <div class="block-title">Friends</div>
+            <div class="friend-list" id="friendList"></div>
+          </div>
+        </aside>
+
+        <section class="chat">
+          <header class="chat-header">
+            <div>
+              <span class="eyebrow">Secure room</span>
+              <h2 id="chatTitle">Choose a friend</h2>
+            </div>
+            <button class="secondary-action" id="refreshButton" type="button">Refresh</button>
+          </header>
+
+          <div class="messages empty" id="messages">
+            <p>Select a friend after they accept your request.</p>
+          </div>
+
+          <form class="message-form" id="messageForm">
+            <input id="messageInput" placeholder="Message" maxlength="1000" disabled />
+            <button type="submit" disabled id="sendButton">Send</button>
+          </form>
+        </section>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
