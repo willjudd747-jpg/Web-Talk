@@ -79,11 +79,26 @@ function normalizeFriendCode(value) {
   return String(value || "").replace(/\D/g, "").slice(0, 9);
 }
 
+function isWeakFriendCode(digits) {
+  if (digits.length !== 9) return true;
+  if (/^(\d)\1{8}$/.test(digits)) return true;
+  if (/^(\d{3})\1\1$/.test(digits)) return true;
+
+  const ascending = "01234567890123456789";
+  const descending = "98765432109876543210";
+  return ascending.includes(digits) || descending.includes(digits);
+}
+
 function createFriendCode(data) {
   const existing = new Set(data.users.map((user) => normalizeFriendCode(user.friendCode)));
-  let digits = randomDigits(9);
-  while (existing.has(digits)) digits = randomDigits(9);
-  return formatFriendCode(digits);
+  for (let attempt = 0; attempt < 100; attempt++) {
+    const digits = randomDigits(9);
+    if (!existing.has(digits) && !isWeakFriendCode(digits)) {
+      return formatFriendCode(digits);
+    }
+  }
+
+  throw new Error("Could not create a unique friend code. Please try again.");
 }
 
 function hashPassword(password, salt = crypto.randomBytes(16).toString("hex")) {
