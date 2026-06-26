@@ -29,6 +29,7 @@ function localNetworkUrls(port) {
 function emptyData() {
   return {
     users: [],
+    reservedFriendCodes: [],
     sessions: [],
     friendRequests: [],
     friendships: [],
@@ -48,7 +49,9 @@ function ensureDataFile() {
 
 function loadData() {
   ensureDataFile();
-  return JSON.parse(fs.readFileSync(DATA_FILE, "utf8"));
+  const data = JSON.parse(fs.readFileSync(DATA_FILE, "utf8"));
+  data.reservedFriendCodes = Array.isArray(data.reservedFriendCodes) ? data.reservedFriendCodes : [];
+  return data;
 }
 
 function saveData(data) {
@@ -90,7 +93,11 @@ function isWeakFriendCode(digits) {
 }
 
 function createFriendCode(data) {
-  const existing = new Set(data.users.map((user) => normalizeFriendCode(user.friendCode)));
+  const existing = new Set([
+    ...data.users.map((user) => normalizeFriendCode(user.friendCode)),
+    ...data.reservedFriendCodes.map(normalizeFriendCode)
+  ]);
+
   for (let attempt = 0; attempt < 100; attempt++) {
     const digits = randomDigits(9);
     if (!existing.has(digits) && !isWeakFriendCode(digits)) {
@@ -261,15 +268,21 @@ async function routeApi(req, res) {
         return sendJson(res, 409, { error: "That username is already taken." });
       }
 
+      const friendCode = createFriendCode(data);
+      const normalizedFriendCode = normalizeFriendCode(friendCode);
+
       const newUser = {
         id: data.nextUserId++,
         username,
         displayName,
         passwordHash: hashPassword(password),
-        friendCode: createFriendCode(data),
+        friendCode,
         createdAt: new Date().toISOString()
       };
       data.users.push(newUser);
+      if (!data.reservedFriendCodes.map(normalizeFriendCode).includes(normalizedFriendCode)) {
+        data.reservedFriendCodes.push(friendCode);
+      }
       const token = createSession(data, newUser.id);
       saveData(data);
       return sendJson(res, 201, { user: publicUser(newUser) }, { "Set-Cookie": setSessionCookie(token) });
@@ -277,11 +290,13 @@ async function routeApi(req, res) {
 
     if (req.method === "POST" && url.pathname === "/api/login") {
       const body = await requestJson(req);
-      const friendCode = normalizeFriendCode(body.friendCode || body.username);
+      const loginId = String(body.loginId || body.friendCode || body.username || "").trim();
+      const friendCode = normalizeFriendCode(loginId);
+      const username = loginId.toLowerCase();
       const password = String(body.password || "");
-      const found = data.users.find((item) => normalizeFriendCode(item.friendCode) === friendCode);
+      const found = data.users.find((item) => item.username === username || normalizeFriendCode(item.friendCode) === friendCode);
       if (!found || !verifyPassword(password, found.passwordHash)) {
-        return sendJson(res, 401, { error: "Friend code or password is wrong." });
+        return sendJson(res, 401, { error: "Username, friend code, or password is wrong." });
       }
       const token = createSession(data, found.id);
       saveData(data);
