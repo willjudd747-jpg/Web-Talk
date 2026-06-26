@@ -1,0 +1,10 @@
+{
+  "users": [],
+  "sessions": [],
+  "friendRequests": [],
+  "friendships": [],
+  "messages": [],
+  "nextUserId": 1,
+  "nextRequestId": 1,
+  "nextMessageId": 1
+}
