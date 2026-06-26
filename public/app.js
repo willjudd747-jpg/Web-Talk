@@ -59,14 +59,14 @@ function setMode(mode) {
   displayNameLabel.classList.toggle("hidden", mode === "login");
   displayNameInput.required = mode === "signup";
   usernameInput.value = "";
-  usernameInput.placeholder = mode === "signup" ? "pixelchef" : "462-234-349";
-  usernameInput.inputMode = mode === "signup" ? "text" : "numeric";
-  usernameInput.maxLength = mode === "signup" ? 20 : 11;
-  usernameInput.minLength = mode === "signup" ? 3 : 9;
-  usernameInput.autocomplete = mode === "signup" ? "username" : "one-time-code";
-  identityLabel.textContent = mode === "signup" ? "Username" : "Friend code";
+  usernameInput.placeholder = mode === "signup" ? "pixelchef" : "pixelchef or 462-234-349";
+  usernameInput.inputMode = "text";
+  usernameInput.maxLength = mode === "signup" ? 20 : 32;
+  usernameInput.minLength = 3;
+  usernameInput.autocomplete = "username";
+  identityLabel.textContent = mode === "signup" ? "Username" : "Username or friend code";
   authEyebrow.textContent = mode === "signup" ? "New account" : "Return path";
-  authTitle.textContent = mode === "signup" ? "Create your BagelNet ID" : "Login with your code";
+  authTitle.textContent = mode === "signup" ? "Create your BagelNet ID" : "Login your way";
   authSubmit.textContent = mode === "signup" ? "Create account" : "Login";
   authMessage.textContent = "";
 }
@@ -232,7 +232,7 @@ authForm.addEventListener("submit", async (event) => {
       password: passwordInput.value,
       ...(state.mode === "signup"
         ? { username: usernameInput.value, displayName: displayNameInput.value }
-        : { friendCode: usernameInput.value })
+        : { loginId: usernameInput.value })
     };
     const payload = await api(path, { method: "POST", body: JSON.stringify(body) });
     state.user = payload.user;
@@ -262,7 +262,9 @@ friendCodeInput.addEventListener("input", () => {
 
 usernameInput.addEventListener("input", () => {
   if (state.mode !== "login") return;
-  const digits = usernameInput.value.replace(/\D/g, "").slice(0, 9);
+  const rawValue = usernameInput.value.trim();
+  if (!/^[\d-\s]+$/.test(rawValue)) return;
+  const digits = rawValue.replace(/\D/g, "").slice(0, 9);
   usernameInput.value = digits.replace(/(\d{3})(?=\d)/g, "$1-");
 });
 
